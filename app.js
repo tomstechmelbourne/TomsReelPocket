@@ -2,70 +2,94 @@
    Data comes from Tom's Reel as TomsReel-Pocket.json ("Update"); changes go back as
    TomsReel-Changes-<time>.json ("Send to computer"). Nothing is sent to any server. */
 "use strict";
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 
 // ------------------------------------------------------------------ texts (English main, Vietnamese second)
+// Titles, tabs and buttons Use Title Case; hints and messages are normal sentences.
 const T = {
   en: {
-    search_ph: "Do I have it? Name or barcode…", scan: "Scan", close: "Close", scan_type: "Type the barcode instead",
-    tab_search: "Search", tab_fav: "Favourites", tab_wish: "Wish list", tab_more: "Update",
-    all: "All", have_it: "✓ You already have it", have_n: "{n} matches in your collection",
+    search_ph: "Do I have it? Type a name…", close: "Close",
+    tab_search: "Search", tab_fav: "Favourites", tab_wish: "Wish List", tab_more: "Update",
+    all: "All", have_it: "✓ You already have it", near: "≈ Close match — is it this one?", near_sub: "The name is spelt a little differently. Check before you buy.",
     not_have: "✗ Not in your collection", not_have_sub: "Nothing matches “{q}”.",
-    on_wish: "On your wish list", max_price: "pay at most ${p}", add_wish: "+ Add to wish list", bought: "I just bought it",
-    kept: "kept in {w}", lent: "lent to {w}", items: "{n} items", no_fav: "No favourites yet. Tap ☆ on any item.",
-    wish_title: "Wish list", wish_empty: "Nothing on the wish list. Search for something you don't have and tap “Add to wish list”.",
-    wish_add: "Add to wish list", wish_edit: "Change", f_title: "Title", f_artist: "Artist / director", f_format: "Format",
-    f_year: "Year", f_max: "Pay at most ($)", f_barcode: "Barcode", f_notes: "Notes", f_price: "Price paid ($)",
+    have: "Have", not_yet: "Not yet",
+    on_wish: "On your wish list", max_price: "pay at most ${p}", add_wish: "+ Add To Wish List", bought: "I Just Bought It",
+    kept: "kept in {w}", kept_no: "kept in {w} · no. {n}", lent: "lent to {w}", sealed: "Sealed",
+    no_fav: "No favourites yet. Tap ☆ on any tape or disc.",
+    wish_title: "Wish List", wish_empty: "Nothing on the wish list. Search for something you don't have and tap “Add To Wish List”.",
+    wish_add: "Add To Wish List", wish_edit: "Change", f_title: "Title", f_artist: "Artist / Director", f_format: "Format",
+    f_year: "Year", f_max: "Pay At Most ($)", f_barcode: "Barcode", f_notes: "Notes", f_price: "Price Paid ($)",
     f_store: "Where", save: "Save", cancel: "Cancel", delete: "Delete", need_title: "Please type the title.",
-    bought_title: "I just bought it", bought_saved: "Saved. It goes into Tom's Reel next time you “Send to computer”.",
+    bought_title: "I Just Bought It", bought_saved: "Saved. It goes into Tom's Reel next time you “Send To Computer”.",
     wish_saved: "Saved to the wish list.", deleted: "Removed.",
-    welcome: "Welcome to Tom's Reel Pocket",
-    welcome_text: "On the computer, open Tom's Reel → “Phone (Pocket)” → “Send to phone”. Then tap “Update from Tom's Reel” here and pick TomsReel-Pocket.json in Google Drive.",
-    update: "Update from Tom's Reel", update_text: "Pick TomsReel-Pocket.json (Google Drive → Tom's Reel folder).",
-    updated: "Updated: {n} items, {w} on the wish list.", bad_file: "That is not a Tom's Reel Pocket file.",
-    send: "Send to computer", send_text: "Saves your wish list changes, things you bought and favourites as a file. Save it in Google Drive → Tom's Reel folder, then in Tom's Reel press “Take in phone changes”.",
+    welcome: "Welcome To Tom's Reel Pocket",
+    welcome_text: "On the computer, open Tom's Reel → “Phone (Pocket)” → “Send To Phone”. Then tap “Update From Tom's Reel” here and pick TomsReel-Pocket.json in Google Drive.",
+    update: "Update From Tom's Reel", update_text: "Pick TomsReel-Pocket.json (Google Drive → Tom's Reel folder).",
+    updated: "Updated: {n}, {w} on the wish list.", bad_file: "That is not a Tom's Reel Pocket file.",
+    send: "Send To Computer", send_text: "Saves your wish list changes, things you bought and favourites as a file. Save it in Google Drive → Tom's Reel folder, then in Tom's Reel press “Take In Phone Changes”.",
     nothing_to_send: "Nothing new to send.", pending: "{n} change(s) waiting to go to the computer.", all_sent: "Everything is in Tom's Reel.",
-    last_update: "Collection from: {d}", never: "not yet", text_size: "Text size", about: "About",
+    last_update: "Collection from: {d}", never: "not yet", text_size: "Text Size", about: "About",
     about_text: "Tom's Reel Pocket {v} · One of Tom's Tech Products. Idea: Tom's Tech · Built by Claude (Anthropic). Your collection stays on this phone.",
     install: "Add Pocket to the home screen: Chrome menu ⋮ → “Add to Home screen”.",
-    no_detector: "This browser can't read barcodes with the camera. Open Pocket in Chrome, or type the barcode.",
-    camera_no: "The camera could not be opened: {e}", point_camera: "Point the camera at the barcode",
+    look: "Light or dark follows your phone's setting.",
     fav_on: "★ Added to favourites", fav_off: "Removed from favourites", shared: "File ready — save it to Google Drive.",
-    by_format: "Browse", rating: "rating", counts: "In the collection",
+    counts: "In The Collection",
   },
   vi: {
-    search_ph: "Đã có chưa? Gõ tên hoặc mã vạch…", scan: "Quét", close: "Đóng", scan_type: "Gõ mã vạch thay vì quét",
-    tab_search: "Tìm", tab_fav: "Ưu thích", tab_wish: "Muốn mua", tab_more: "Cập nhật",
-    all: "Tất cả", have_it: "✓ Tom đã có món này", have_n: "{n} món khớp trong bộ sưu tập",
-    not_have: "✗ Chưa có trong bộ sưu tập", not_have_sub: "Không có món nào khớp “{q}”.",
-    on_wish: "Đang trong Muốn mua", max_price: "giá tối đa ${p}", add_wish: "+ Thêm vào Muốn mua", bought: "Vừa mua",
-    kept: "cất ở {w}", lent: "cho {w} mượn", items: "{n} món", no_fav: "Chưa có món Ưu thích. Bấm ☆ ở món bất kỳ.",
-    wish_title: "Muốn mua", wish_empty: "Chưa có món nào. Tìm một món chưa có rồi bấm “Thêm vào Muốn mua”.",
-    wish_add: "Thêm vào Muốn mua", wish_edit: "Sửa", f_title: "Tên", f_artist: "Nghệ sĩ / đạo diễn", f_format: "Định dạng",
-    f_year: "Năm", f_max: "Giá tối đa ($)", f_barcode: "Mã vạch", f_notes: "Ghi chú", f_price: "Giá đã trả ($)",
-    f_store: "Mua ở đâu", save: "Lưu", cancel: "Hủy", delete: "Xóa", need_title: "Hãy gõ tên.",
-    bought_title: "Vừa mua", bought_saved: "Đã lưu. Món này sẽ vào Tom's Reel khi Tom bấm “Gửi về máy tính”.",
-    wish_saved: "Đã lưu vào Muốn mua.", deleted: "Đã bỏ.",
-    welcome: "Chào mừng đến với Tom's Reel Pocket",
-    welcome_text: "Trên máy tính, mở Tom's Reel → “Điện thoại (Pocket)” → “Gửi sang điện thoại”. Rồi bấm “Cập nhật từ Tom's Reel” ở đây và chọn TomsReel-Pocket.json trong Google Drive.",
-    update: "Cập nhật từ Tom's Reel", update_text: "Chọn file TomsReel-Pocket.json (Google Drive → thư mục Tom's Reel).",
-    updated: "Đã cập nhật: {n} món, {w} món Muốn mua.", bad_file: "Đây không phải file của Tom's Reel Pocket.",
-    send: "Gửi về máy tính", send_text: "Lưu các thay đổi Muốn mua, món vừa mua và Ưu thích thành một file. Lưu file vào Google Drive → thư mục Tom's Reel, rồi trong Tom's Reel bấm “Nhận thay đổi từ điện thoại”.",
+    search_ph: "Đã có chưa? Gõ tên…", close: "Đóng",
+    tab_search: "Tìm", tab_fav: "Ưu Thích", tab_wish: "Muốn Mua", tab_more: "Cập Nhật",
+    all: "Tất Cả", have_it: "✓ Tom đã có rồi", near: "≈ Gần đúng — có phải băng đĩa này?", near_sub: "Tên gõ hơi khác một chút. Kiểm tra lại trước khi mua.",
+    not_have: "✗ Chưa có trong bộ sưu tập", not_have_sub: "Không có băng đĩa nào khớp “{q}”.",
+    have: "Đã có", not_yet: "Chưa có",
+    on_wish: "Đang trong Muốn Mua", max_price: "giá tối đa ${p}", add_wish: "+ Thêm Vào Muốn Mua", bought: "Vừa Mua",
+    kept: "cất ở {w}", kept_no: "cất ở {w} · số {n}", lent: "cho {w} mượn", sealed: "Nguyên Seal",
+    no_fav: "Chưa có băng đĩa ưu thích. Bấm ☆ ở băng đĩa bất kỳ.",
+    wish_title: "Muốn Mua", wish_empty: "Chưa có gì. Tìm một băng đĩa chưa có rồi bấm “Thêm Vào Muốn Mua”.",
+    wish_add: "Thêm Vào Muốn Mua", wish_edit: "Sửa", f_title: "Tên", f_artist: "Nghệ Sĩ / Đạo Diễn", f_format: "Định Dạng",
+    f_year: "Năm", f_max: "Giá Tối Đa ($)", f_barcode: "Mã Vạch", f_notes: "Ghi Chú", f_price: "Giá Đã Trả ($)",
+    f_store: "Mua Ở Đâu", save: "Lưu", cancel: "Hủy", delete: "Xóa", need_title: "Hãy gõ tên.",
+    bought_title: "Vừa Mua", bought_saved: "Đã lưu. Băng đĩa này sẽ vào Tom's Reel khi Tom bấm “Gửi Về Máy Tính”.",
+    wish_saved: "Đã lưu vào Muốn Mua.", deleted: "Đã bỏ.",
+    welcome: "Chào Mừng Đến Với Tom's Reel Pocket",
+    welcome_text: "Trên máy tính, mở Tom's Reel → “Điện Thoại (Pocket)” → “Gửi Sang Điện Thoại”. Rồi bấm “Cập Nhật Từ Tom's Reel” ở đây và chọn TomsReel-Pocket.json trong Google Drive.",
+    update: "Cập Nhật Từ Tom's Reel", update_text: "Chọn file TomsReel-Pocket.json (Google Drive → thư mục Tom's Reel).",
+    updated: "Đã cập nhật: {n}, {w} trong Muốn Mua.", bad_file: "Đây không phải file của Tom's Reel Pocket.",
+    send: "Gửi Về Máy Tính", send_text: "Lưu các thay đổi Muốn Mua, băng đĩa vừa mua và Ưu Thích thành một file. Lưu file vào Google Drive → thư mục Tom's Reel, rồi trong Tom's Reel bấm “Nhận Thay Đổi Từ Điện Thoại”.",
     nothing_to_send: "Chưa có gì mới để gửi.", pending: "{n} thay đổi đang chờ gửi về máy tính.", all_sent: "Mọi thứ đã vào Tom's Reel.",
-    last_update: "Dữ liệu từ: {d}", never: "chưa có", text_size: "Cỡ chữ", about: "Giới thiệu",
+    last_update: "Dữ liệu từ: {d}", never: "chưa có", text_size: "Cỡ Chữ", about: "Giới Thiệu",
     about_text: "Tom's Reel Pocket {v} · One of Tom's Tech Products. Ý tưởng: Tom's Tech · Xây dựng bởi Claude (Anthropic). Bộ sưu tập chỉ nằm trên điện thoại này.",
     install: "Thêm Pocket ra màn hình chính: menu Chrome ⋮ → “Thêm vào màn hình chính”.",
-    no_detector: "Trình duyệt này không đọc được mã vạch bằng camera. Hãy mở Pocket bằng Chrome, hoặc gõ mã vạch.",
-    camera_no: "Không mở được camera: {e}", point_camera: "Đưa camera vào mã vạch",
-    fav_on: "★ Đã thêm vào Ưu thích", fav_off: "Đã bỏ khỏi Ưu thích", shared: "File đã sẵn sàng — hãy lưu vào Google Drive.",
-    by_format: "Xem theo", rating: "điểm", counts: "Trong bộ sưu tập",
+    look: "Sáng hay tối tự theo cài đặt của điện thoại.",
+    fav_on: "★ Đã thêm vào Ưu Thích", fav_off: "Đã bỏ khỏi Ưu Thích", shared: "File đã sẵn sàng — hãy lưu vào Google Drive.",
+    counts: "Trong Bộ Sưu Tập",
   },
 };
 const FORMATS = ["VHS", "VINYL", "CASSETTE", "CD", "VCD", "DVD", "BLURAY", "UHD", "OTHER"];
+const VIDEO = ["VHS", "VCD", "DVD", "BLURAY", "UHD"];
+const MUSIC = ["VINYL", "CASSETTE", "CD"];
+const TAPES = new Set(["VHS", "CASSETTE"]);
 const FMT = {
   en: {VHS: "VHS", VINYL: "Vinyl", CASSETTE: "Cassette", CD: "CD", VCD: "VCD", DVD: "DVD", BLURAY: "Blu-ray", UHD: "4K UHD", OTHER: "Other"},
-  vi: {VHS: "VHS", VINYL: "Đĩa than", CASSETTE: "Băng cassette", CD: "CD", VCD: "VCD", DVD: "DVD", BLURAY: "Blu-ray", UHD: "4K UHD", OTHER: "Khác"},
+  vi: {VHS: "VHS", VINYL: "Đĩa Than", CASSETTE: "Băng Cassette", CD: "CD", VCD: "VCD", DVD: "DVD", BLURAY: "Blu-ray", UHD: "4K UHD", OTHER: "Khác"},
 };
+
+// "3 băng, 7 đĩa" / "3 tapes, 1 record, 6 discs" — never "món" / "items"
+function countMedia(list) {
+  let tapes = 0, recs = 0, discs = 0;
+  for (const it of list) { const f = it.format || "OTHER"; if (TAPES.has(f)) tapes++; else if (f === "VINYL") recs++; else discs++; }
+  const vi = S.lang === "vi";
+  const parts = [];
+  const word = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  if (vi) {
+    if (tapes) parts.push(`${tapes} băng`);
+    if (recs + discs) parts.push(`${recs + discs} đĩa`);
+    return parts.join(", ") || "0 băng đĩa";
+  }
+  if (tapes) parts.push(word(tapes, "tape", "tapes"));
+  if (recs) parts.push(word(recs, "record", "records"));
+  if (discs) parts.push(word(discs, "disc", "discs"));
+  return parts.join(", ") || "0 tapes or discs";
+}
 
 // ------------------------------------------------------------------ state
 const S = {data: null, pending: [], lang: "en", scale: 1, view: "search", fmt: "", q: "", lastSent: ""};
@@ -129,6 +153,38 @@ function boughtHere() {
   return S.pending.filter(c => c.type === "bought").map(c => ({...c.item, id: "b" + c.id, justBought: true}));
 }
 
+// Typo-tolerant search over the title, the original / Vietnamese title, artist, year, barcode.
+// Each typed word must be found: exactly, as the start of a word, or with a small typing slip.
+function editDistance(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({length: b.length + 1}, (_, k) => k), prev2 = null;
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    let best = i;
+    for (let j = 1; j <= b.length; j++) {
+      let v = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (prev2 && i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, prev2[j - 2] + 1);
+      cur.push(v); if (v < best) best = v;
+    }
+    if (best > max) return max + 1;
+    prev2 = prev; prev = cur;
+  }
+  return prev[b.length];
+}
+const slack = w => (w.length >= 8 ? 2 : w.length >= 4 ? 1 : 0);
+
+// how well one typed word matches a text: 0 exact, 1 small slip, 9 no
+function wordScore(w, words, squashed) {
+  if (squashed.includes(w)) return 0;
+  const k = slack(w);
+  if (!k) return 9;
+  for (const h of words) {
+    if (editDistance(w, h, k) <= k) return 1;
+    if (h.length > w.length && editDistance(w, h.slice(0, w.length), k) <= k) return 1;   // still typing
+  }
+  return 9;
+}
+
 function search(q) {
   q = q.trim();
   if (!q) return [];
@@ -136,20 +192,41 @@ function search(q) {
   const d = digits(q);
   if (d.length >= 8 && d.length >= q.replace(/\s/g, "").length - 1) {
     const hits = all.filter(it => sameCode(it.barcode, d));
-    if (hits.length) return hits;
+    if (hits.length) return hits.map(it => ({it, sc: 0}));
   }
-  const words = plain(q).split(/\s+/).filter(Boolean);
-  const scored = [];
+  const qw = plain(q).split(/[^a-z0-9]+/).filter(Boolean);
+  const qs = qw.join("");
+  if (!qw.length) return [];
+  const out = [];
   for (const it of all) {
-    const title = plain(it.title) + " " + plain(it.original_title);
-    const hay = title + " " + plain([it.artist, it.year, it.label, it.catalog_no, it.barcode].join(" "));
-    if (words.every(w => hay.includes(w))) {
-      const sc = title.startsWith(words.join(" ")) ? 0 : (words.every(w => title.includes(w)) ? 1 : 2);
-      scored.push([sc, plain(it.title), it]);
+    const titles = [plain(it.title), plain(it.original_title)].filter(Boolean);
+    const other = plain([it.artist, it.year, it.label, it.catalog_no, it.barcode].join(" "));
+    const words = (titles.join(" ") + " " + other).split(/[^a-z0-9]+/).filter(Boolean);
+    const squashed = titles.map(x => x.replace(/[^a-z0-9]/g, "")).join(" ") + " " + other;
+    let total = 0;
+    for (const w of qw) { const s = wordScore(w, words, squashed); if (s === 9) { total = 9; break; } total = Math.max(total, s); }
+    if (total === 9 && qs.length >= 5) {            // "spiderman" for "Spider-Man", "batmanbegins"
+      const sq = titles.map(x => x.replace(/[^a-z0-9]/g, ""));
+      if (sq.some(x => x.includes(qs))) total = 0;
+      else if (sq.some(x => editDistance(qs, x.slice(0, qs.length), slack(qs)) <= slack(qs))) total = 1;
     }
+    if (total === 9) continue;
+    const starts = titles.some(x => x.startsWith(qw.join(" "))) ? 0 : 1;
+    out.push({it, sc: total * 2 + starts});
   }
-  scored.sort((a, b) => a[0] - b[0] || a[1].localeCompare(b[1]));
-  return scored.map(x => x[2]);
+  out.sort((a, b) => a.sc - b.sc || plain(a.it.title).localeCompare(plain(b.it.title)));
+  return out;
+}
+
+// the same film / album on several formats: one card, formats you have and don't have
+function works(hits) {
+  const map = new Map();
+  for (const h of hits) {
+    const key = plain(h.it.original_title || h.it.title).replace(/[^a-z0-9]/g, "") + "|" + plain(h.it.artist).replace(/[^a-z0-9]/g, "");
+    if (!map.has(key)) map.set(key, {key, items: [], sc: h.sc});
+    const w = map.get(key); w.items.push(h.it); w.sc = Math.min(w.sc, h.sc);
+  }
+  return [...map.values()].sort((a, b) => a.sc - b.sc);
 }
 
 // ------------------------------------------------------------------ rendering
@@ -181,16 +258,44 @@ function ratingText(it) {
   return "";
 }
 
+function whereText(it) {
+  if (!it.location) return "";
+  return it.shelf_no ? t("kept_no", {w: esc(it.location), n: it.shelf_no}) : t("kept", {w: esc(it.location)});
+}
+
 function itemRow(it) {
-  const meta = [it.year, it.location ? t("kept", {w: esc(it.location)}) : ""].filter(Boolean).join(" · ");
+  const meta = [it.year, whereText(it)].filter(Boolean).join(" · ");
   const r = ratingText(it);
   const star = it.justBought ? "" :
     `<button class="star ${isFav(it) ? "on" : ""}" data-fav="${it.id}" aria-label="★">${isFav(it) ? "★" : "☆"}</button>`;
   return `<div class="row">${thumb(it)}<div class="txt">
     <div class="t">${esc(it.title)}</div>${it.artist ? `<div class="a">${esc(it.artist)}</div>` : ""}
-    <div class="m"><span class="pill fmt">${esc(fmtLabel(it.format))}</span>${r ? `<span class="pill rate">★ ${r}</span>` : ""}${
+    <div class="m"><span class="pill fmt">${esc(fmtLabel(it.format))}</span>${it.sealed ? `<span class="pill seal">${t("sealed")}</span>` : ""}${
+      r ? `<span class="pill rate">★ ${r}</span>` : ""}${it.age_rating ? `<span class="pill loan">${esc(it.age_rating)}</span>` : ""}${
       it.loan_to ? `<span class="pill loan">${t("lent", {w: esc(it.loan_to)})}</span>` : ""}${it.justBought ? `<span class="pill rate">${t("bought")}</span>` : ""} ${meta}</div>
     </div>${star}</div>`;
+}
+
+// one film / album: which formats you have (with where they are) and which you don't
+function workCard(w) {
+  const first = w.items[0];
+  const fams = new Set(w.items.map(i => (VIDEO.includes(i.format) ? "v" : MUSIC.includes(i.format) ? "m" : "o")));
+  const family = fams.has("v") ? VIDEO : fams.has("m") ? MUSIC : [];
+  const have = new Set(w.items.map(i => i.format || "OTHER"));
+  const chipsHave = FORMATS.filter(f => have.has(f)).map(f => `<span class="fm have">✓ ${esc(fmtLabel(f))}</span>`).join("");
+  const chipsNot = family.filter(f => !have.has(f)).map(f => `<span class="fm not">${esc(fmtLabel(f))}</span>`).join("");
+  const wheres = w.items.map(i => {
+    const bits = [`<b>${esc(fmtLabel(i.format))}</b>`, whereText(i) || ""];
+    if (i.sealed) bits.push(t("sealed"));
+    if (i.loan_to) bits.push(t("lent", {w: esc(i.loan_to)}));
+    const star = i.justBought ? "" : `<button class="star ${isFav(i) ? "on" : ""}" data-fav="${i.id}" aria-label="★" style="font-size:1.4rem;padding:0 4px">${isFav(i) ? "★" : "☆"}</button>`;
+    return `<div class="where" style="display:flex;align-items:center;gap:6px"><span style="flex:1">${bits.filter(Boolean).join(" · ")}</span>${star}</div>`;
+  }).join("");
+  const alt = first.original_title && plain(first.original_title) !== plain(first.title) ? ` <span class="wa">(${esc(first.original_title)})</span>` : "";
+  return `<div class="work"><div class="wt">${esc(first.title)}${alt}</div>
+    <div class="wa">${esc([first.artist, first.year].filter(Boolean).join(" · "))}</div>
+    <div class="fmts">${chipsHave}${chipsNot ? `<span class="fm not" style="border:0;padding-left:2px">${t("not_yet")}:</span>${chipsNot}` : ""}</div>
+    ${wheres}</div>`;
 }
 
 function wishRow(w) {
@@ -205,7 +310,7 @@ function wishRow(w) {
 
 function render() {
   renderTabs();
-  $("searchrow").style.display = S.view === "search" ? "flex" : "none";
+  $("searchrow").style.display = S.view === "search" ? "block" : "none";
   const m = $("main");
   if (!S.data && S.view !== "more") {
     m.innerHTML = `<div class="card section"><h2>${t("welcome")}</h2><p>${t("welcome_text")}</p>
@@ -215,7 +320,7 @@ function render() {
   if (S.view === "search") return renderSearch(m);
   if (S.view === "fav") {
     const favs = items().filter(isFav).sort((a, b) => plain(a.title).localeCompare(plain(b.title)));
-    m.innerHTML = `<h2>★ ${t("tab_fav")} · ${t("items", {n: favs.length})}</h2>` +
+    m.innerHTML = `<h2>★ ${t("tab_fav")} · ${countMedia(favs)}</h2>` +
       (favs.length ? `<div class="list">${favs.map(itemRow).join("")}</div>` : `<div class="empty">${t("no_fav")}</div>`);
     return;
   }
@@ -236,17 +341,24 @@ function renderSearch(m) {
       `<button class="chip ${S.fmt === f ? "on" : ""}" data-fmt="${f}">${esc(fmtLabel(f))}</button>`).join("")}</div>`;
   if (!q) {
     const list = items().filter(i => !S.fmt || i.format === S.fmt).sort((a, b) => plain(a.title).localeCompare(plain(b.title)));
-    m.innerHTML = chips + `<div class="muted" style="margin-bottom:8px">${t("items", {n: list.length})}</div>` +
+    m.innerHTML = chips + `<div class="muted" style="margin-bottom:8px">${countMedia(list)}</div>` +
       `<div class="list">${list.slice(0, 300).map(itemRow).join("")}</div>`;
     return;
   }
-  const hits = search(q).filter(i => !S.fmt || i.format === S.fmt);
+  const hits = search(q).filter(h => !S.fmt || h.it.format === S.fmt);
+  const sure = hits.filter(h => h.sc < 2), maybe = hits.filter(h => h.sc >= 2);
   const wq = plain(q).split(/\s+/).filter(Boolean);
   const wishHits = wishes().filter(w => wq.every(x => plain(w.title + " " + (w.artist || "")).includes(x)) || sameCode(w.barcode, q));
   let v = "";
-  if (hits.length) {
-    const fm = [...new Set(hits.map(h => fmtLabel(h.format)))].join(", ");
-    v = `<div class="verdict yes">${t("have_it")}<div class="sub">${t("have_n", {n: hits.length})} · ${esc(fm)}</div></div>`;
+  if (sure.length) {
+    v = `<div class="verdict yes">${t("have_it")}<div class="sub">${countMedia(sure.map(h => h.it))}</div></div>` +
+      works(sure).slice(0, 12).map(workCard).join("");
+    if (maybe.length) v += `<div class="verdict near">${t("near")}<div class="sub">${t("near_sub")}</div></div>` +
+      works(maybe).slice(0, 6).map(workCard).join("");
+  } else if (maybe.length) {
+    v = `<div class="verdict near">${t("near")}<div class="sub">${t("near_sub")}</div>
+      ${wishHits.length ? "" : `<div class="acts"><button class="btn" data-act="addwish-q">${t("add_wish")}</button>
+      <button class="btn primary" data-act="bought-q">${t("bought")}</button></div>`}</div>` + works(maybe).slice(0, 8).map(workCard).join("");
   } else {
     v = `<div class="verdict no">${t("not_have")}<div class="sub">${t("not_have_sub", {q: esc(q)})}</div>
       ${wishHits.length ? "" : `<div class="acts"><button class="btn" data-act="addwish-q">${t("add_wish")}</button>
@@ -257,7 +369,7 @@ function renderSearch(m) {
       w.max_price ? t("max_price", {p: w.max_price}) : ""}${w.notes ? " · " + esc(w.notes) : ""}</div>
       <div class="acts"><button class="btn primary" data-buywish="${w.key}">${t("bought")}</button></div></div>`).join("");
   }
-  m.innerHTML = chips + v + `<div class="list">${hits.slice(0, 200).map(itemRow).join("")}</div>`;
+  m.innerHTML = chips + v;
 }
 
 function renderMore(m) {
@@ -271,12 +383,12 @@ function renderMore(m) {
     <div class="card section"><h2>${t("send")}</h2><p>${t("send_text")}</p>
       <p><b>${S.pending.length ? t("pending", {n: S.pending.length}) : t("all_sent")}</b></p>
       <button class="btn primary block" data-act="send">${t("send")}</button></div>
-    ${counts.length ? `<div class="card section"><h2>${t("counts")}</h2><p>${counts.map(([f, n]) =>
+    ${counts.length ? `<div class="card section"><h2>${t("counts")}</h2><p><b>${countMedia(items())}</b></p><p>${counts.map(([f, n]) =>
       `${esc(fmtLabel(f))}: <b>${n}</b>`).join(" · ")}</p></div>` : ""}
     <div class="card section"><h2>${t("text_size")}</h2><div class="sizes">${[1, 1.15, 1.3].map((s, i) =>
       `<button class="btn ${S.scale === s ? "on" : ""}" data-size="${s}">${["A", "A+", "A++"][i]}</button>`).join("")}</div></div>
     <div class="card section"><h2>${t("about")}</h2><p><b>Focus On One Thing And Do It Well</b></p>
-      <p>${t("about_text", {v: VERSION})}</p><p>${t("install")}</p></div>
+      <p>${t("about_text", {v: VERSION})}</p><p>${t("install")}</p><p>${t("look")}</p></div>
     <div class="foot">Tom's Reel Pocket ${VERSION}</div>`;
 }
 
@@ -358,7 +470,7 @@ async function importFile(file) {
     const applied = new Set(data.applied || []);
     S.pending = S.pending.filter(c => !applied.has(c.id));
     await savePending();
-    toast(t("updated", {n: data.items.length, w: (data.wishlist || []).length}));
+    toast(t("updated", {n: countMedia(data.items), w: (data.wishlist || []).length}));
     render();
   } catch (e) {
     toast(t("bad_file"));
@@ -389,61 +501,6 @@ async function sendChanges() {
   a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
   toast(t("shared"));
-}
-
-// ------------------------------------------------------------------ barcode scanner (Chrome on Android)
-let stream = null, scanning = false;
-async function openScanner() {
-  if (!("BarcodeDetector" in window)) { toast(t("no_detector")); typeBarcode(); return; }
-  let detector;
-  try { detector = new BarcodeDetector({formats: ["ean_13", "ean_8", "upc_a", "upc_e"]}); }
-  catch (e) { toast(t("no_detector")); typeBarcode(); return; }
-  $("scanmsg").textContent = t("point_camera");
-  $("scanner").style.display = "flex";
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "environment", width: {ideal: 1280}}, audio: false});
-  } catch (e) {
-    closeScanner(); toast(t("camera_no", {e: e.message || e.name})); return;
-  }
-  const video = $("video");
-  video.srcObject = stream;
-  await video.play().catch(() => {});
-  scanning = true;
-  const loop = async () => {
-    if (!scanning) return;
-    try {
-      const codes = await detector.detect(video);
-      const hit = codes.find(c => digits(c.rawValue).length >= 8);
-      if (hit) {
-        beep(); if (navigator.vibrate) navigator.vibrate(80);
-        closeScanner();
-        S.q = digits(hit.rawValue); $("q").value = S.q; S.view = "search"; render();
-        return;
-      }
-    } catch (e) { /* frame not ready */ }
-    setTimeout(loop, 220);
-  };
-  loop();
-}
-function closeScanner() {
-  scanning = false;
-  if (stream) stream.getTracks().forEach(tr => tr.stop());
-  stream = null;
-  $("scanner").style.display = "none";
-}
-function typeBarcode() {
-  closeScanner();
-  const q = $("q");
-  q.setAttribute("inputmode", "numeric");
-  q.value = ""; S.q = ""; render(); q.focus();
-}
-function beep() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const o = ctx.createOscillator(), g = ctx.createGain();
-    o.frequency.value = 1320; g.gain.value = 0.12; o.connect(g); g.connect(ctx.destination);
-    o.start(); o.stop(ctx.currentTime + 0.12);
-  } catch (e) { /* no sound */ }
 }
 
 // ------------------------------------------------------------------ misc
@@ -491,9 +548,6 @@ $("filein").addEventListener("change", e => { const f = e.target.files[0]; if (f
 let qTimer = 0;
 $("q").addEventListener("input", e => { clearTimeout(qTimer); qTimer = setTimeout(() => { S.q = e.target.value; render(); }, 120); });
 $("qclear").onclick = () => { $("q").value = ""; S.q = ""; $("q").setAttribute("inputmode", "search"); render(); $("q").focus(); };
-$("scan").onclick = openScanner;
-$("scanclose").onclick = closeScanner;
-$("scantype").onclick = typeBarcode;
 
 (async function start() {
   S.lang = localStorageGet("lang") || ((navigator.language || "").startsWith("vi") ? "vi" : "en");
