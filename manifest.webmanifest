@@ -1,0 +1,16 @@
+{
+  "name": "Tom's Reel Pocket",
+  "short_name": "Reel Pocket",
+  "description": "Your tapes, discs and records on your phone — check what you have, even in the shop without internet.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4F8FA",
+  "theme_color": "#0D2C40",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
