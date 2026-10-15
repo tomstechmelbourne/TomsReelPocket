@@ -2,7 +2,7 @@
    Data comes from Tom's Reel as TomsReel-Pocket.json ("Update"); changes go back as
    TomsReel-Changes-<time>.json ("Send to computer"). Nothing is sent to any server. */
 "use strict";
-const VERSION = "1.1.0";
+const VERSION = "1.2.0";
 
 // ------------------------------------------------------------------ texts (English main, Vietnamese second)
 // Titles, tabs and buttons Use Title Case; hints and messages are normal sentences.
@@ -29,7 +29,8 @@ const T = {
     send: "Send To Computer", send_text: "Saves your wish list changes, things you bought and favourites as a file. Save it in Google Drive → Tom's Reel folder, then in Tom's Reel press “Take In Phone Changes”.",
     nothing_to_send: "Nothing new to send.", pending: "{n} change(s) waiting to go to the computer.", all_sent: "Everything is in Tom's Reel.",
     last_update: "Collection from: {d}", never: "not yet", text_size: "Text Size", about: "About",
-    about_text: "Tom's Reel Pocket {v} · One of Tom's Tech Products. Idea: Tom's Tech · Built by Claude (Anthropic). Your collection stays on this phone.",
+    about_text: "Tom's Reel Pocket {v} · One of Tom's Technology Solutions Products. Idea: Tom's Technology Solutions · Built by Claude (Anthropic). Your collection stays on this phone.",
+    tape: "Tape", disc: "Disc", tapes: "tapes", discs: "discs", eps: "episodes {e}", se_have: "{have}/{total} {word}", se_missing: "missing {w} {n}", se_complete: "complete set {n}",
     install: "Add Pocket to the home screen: Chrome menu ⋮ → “Add to Home screen”.",
     look: "Light or dark follows your phone's setting.",
     fav_on: "★ Added to favourites", fav_off: "Removed from favourites", shared: "File ready — save it to Google Drive.",
@@ -57,7 +58,8 @@ const T = {
     send: "Gửi Về Máy Tính", send_text: "Lưu các thay đổi Muốn Mua, băng đĩa vừa mua và Ưu Thích thành một file. Lưu file vào Google Drive → thư mục Tom's Reel, rồi trong Tom's Reel bấm “Nhận Thay Đổi Từ Điện Thoại”.",
     nothing_to_send: "Chưa có gì mới để gửi.", pending: "{n} thay đổi đang chờ gửi về máy tính.", all_sent: "Mọi thứ đã vào Tom's Reel.",
     last_update: "Dữ liệu từ: {d}", never: "chưa có", text_size: "Cỡ Chữ", about: "Giới Thiệu",
-    about_text: "Tom's Reel Pocket {v} · One of Tom's Tech Products. Ý tưởng: Tom's Tech · Xây dựng bởi Claude (Anthropic). Bộ sưu tập chỉ nằm trên điện thoại này.",
+    about_text: "Tom's Reel Pocket {v} · One of Tom's Technology Solutions Products. Ý tưởng: Tom's Technology Solutions · Xây dựng bởi Claude (Anthropic). Bộ sưu tập chỉ nằm trên điện thoại này.",
+    tape: "Băng", disc: "Đĩa", tapes: "băng", discs: "đĩa", eps: "tập {e}", se_have: "{have}/{total} {word}", se_missing: "thiếu {w} {n}", se_complete: "đủ bộ {n}",
     install: "Thêm Pocket ra màn hình chính: menu Chrome ⋮ → “Thêm vào màn hình chính”.",
     look: "Sáng hay tối tự theo cài đặt của điện thoại.",
     fav_on: "★ Đã thêm vào Ưu Thích", fav_off: "Đã bỏ khỏi Ưu Thích", shared: "File đã sẵn sàng — hãy lưu vào Google Drive.",
@@ -90,6 +92,46 @@ function countMedia(list) {
   if (discs) parts.push(word(discs, "disc", "discs"));
   return parts.join(", ") || "0 tapes or discs";
 }
+
+// ------------------------------------------------------------------ TV series: Băng 1, 2, 3 / Đĩa I, II, III
+const ROMAN = [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
+function toRoman(n) { let o = ""; for (const [v, r] of ROMAN) while (n >= v) { o += r; n -= v; } return o; }
+function fromRoman(s) {
+  s = String(s || "").toUpperCase(); if (!/^[MDCLXVI]+$/.test(s)) return 0;
+  const V = {M: 1000, D: 500, C: 100, L: 50, X: 10, V: 5, I: 1}; let t = 0, prev = 0;
+  for (const ch of s.split("").reverse()) { const v = V[ch]; t += v < prev ? -v : v; prev = Math.max(prev, v); }
+  return toRoman(t) === s ? t : 0;
+}
+function seriesInfo(name) { return ((S.data && S.data.series) || {})[name] || {}; }
+const unitWord = f => (TAPES.has(f || "") ? t("tape") : t("disc"));
+const numText = (n, roman) => (roman ? toRoman(n) : String(n));
+function seriesShort(it) {
+  if (!it.series || !it.series_no) return "";
+  return `${unitWord(it.format)} ${numText(it.series_no, seriesInfo(it.series).roman)}`;
+}
+function seriesStatus(name) {
+  const rows = items().filter(i => i.series === name);
+  const info = seriesInfo(name);
+  const have = [...new Set(rows.map(r => r.series_no).filter(Boolean))].sort((a, b) => a - b);
+  const total = info.total || (have.length ? Math.max(...have) : 0);
+  const fmts = new Set(rows.map(r => r.format));
+  const word = fmts.size === 1 && TAPES.has([...fmts][0] || "") ? t("tapes") : t("discs");
+  const W = fmts.size === 1 ? unitWord([...fmts][0]) : t("disc");
+  const missing = []; for (let n = 1; n <= total; n++) if (!have.includes(n)) missing.push(numText(n, info.roman));
+  const head = t("se_have", {have: have.length || rows.length, total: total || rows.length, word});
+  if (total && !missing.length) return {text: t("se_complete", {n: head}), complete: true};
+  return {text: head + (missing.length ? " · " + t("se_missing", {w: W, n: missing.slice(0, 8).join(", ")}) : ""), complete: false};
+}
+// "thần điêu tập 15" / "băng IV" / "disc 2"
+function parseSeriesQuery(q) {
+  let ep = 0, no = 0;
+  q = q.replace(/\b(?:tập|tap|ep|eps|episode)\s*\.?\s*(\d+)\b/i, (m, n) => { ep = +n; return " "; });
+  q = q.replace(/(?:^|\s)(?:băng|bang|đĩa|dia|tape|disc|disk|vol)\s*\.?\s*([0-9]+|[ivxlcdm]+)(?=\s|$)/i, (m, n) => {
+    const v = /^\d+$/.test(n) ? +n : fromRoman(n); if (v) { no = v; return " "; } return m; });
+  return {q: q.trim(), ep, no};
+}
+const epRanges = s => [...String(s || "").matchAll(/(\d+)\s*(?:[-–—~]\s*(\d+))?/g)].map(m => [+m[1], +(m[2] || m[1])]);
+const hasEp = (it, ep) => epRanges(it.episodes).some(([a, b]) => a <= ep && ep <= b);
 
 // ------------------------------------------------------------------ state
 const S = {data: null, pending: [], lang: "en", scale: 1, view: "search", fmt: "", q: "", lastSent: ""};
@@ -194,12 +236,15 @@ function search(q) {
     const hits = all.filter(it => sameCode(it.barcode, d));
     if (hits.length) return hits.map(it => ({it, sc: 0}));
   }
-  const qw = plain(q).split(/[^a-z0-9]+/).filter(Boolean);
+  const sq = parseSeriesQuery(q);
+  const qw = plain(sq.q).split(/[^a-z0-9]+/).filter(Boolean);
   const qs = qw.join("");
-  if (!qw.length) return [];
+  if (!qw.length && !sq.ep && !sq.no) return [];
   const out = [];
   for (const it of all) {
-    const titles = [plain(it.title), plain(it.original_title)].filter(Boolean);
+    if (sq.ep && !hasEp(it, sq.ep)) continue;
+    if (sq.no && it.series_no !== sq.no) continue;
+    const titles = [plain(it.title), plain(it.original_title), plain(it.series)].filter(Boolean);
     const other = plain([it.artist, it.year, it.label, it.catalog_no, it.barcode].join(" "));
     const words = (titles.join(" ") + " " + other).split(/[^a-z0-9]+/).filter(Boolean);
     const squashed = titles.map(x => x.replace(/[^a-z0-9]/g, "")).join(" ") + " " + other;
@@ -222,7 +267,8 @@ function search(q) {
 function works(hits) {
   const map = new Map();
   for (const h of hits) {
-    const key = plain(h.it.original_title || h.it.title).replace(/[^a-z0-9]/g, "") + "|" + plain(h.it.artist).replace(/[^a-z0-9]/g, "");
+    const key = h.it.series ? "series|" + h.it.series :
+      plain(h.it.original_title || h.it.title).replace(/[^a-z0-9]/g, "") + "|" + plain(h.it.artist).replace(/[^a-z0-9]/g, "");
     if (!map.has(key)) map.set(key, {key, items: [], sc: h.sc});
     const w = map.get(key); w.items.push(h.it); w.sc = Math.min(w.sc, h.sc);
   }
@@ -270,7 +316,7 @@ function itemRow(it) {
     `<button class="star ${isFav(it) ? "on" : ""}" data-fav="${it.id}" aria-label="★">${isFav(it) ? "★" : "☆"}</button>`;
   return `<div class="row">${thumb(it)}<div class="txt">
     <div class="t">${esc(it.title)}</div>${it.artist ? `<div class="a">${esc(it.artist)}</div>` : ""}
-    <div class="m"><span class="pill fmt">${esc(fmtLabel(it.format))}</span>${it.sealed ? `<span class="pill seal">${t("sealed")}</span>` : ""}${
+    <div class="m"><span class="pill fmt">${esc(fmtLabel(it.format))}</span>${seriesShort(it) ? `<span class="pill rate">${esc(seriesShort(it))}</span>` : ""}${it.sealed ? `<span class="pill seal">${t("sealed")}</span>` : ""}${
       r ? `<span class="pill rate">★ ${r}</span>` : ""}${it.age_rating ? `<span class="pill loan">${esc(it.age_rating)}</span>` : ""}${
       it.loan_to ? `<span class="pill loan">${t("lent", {w: esc(it.loan_to)})}</span>` : ""}${it.justBought ? `<span class="pill rate">${t("bought")}</span>` : ""} ${meta}</div>
     </div>${star}</div>`;
@@ -284,15 +330,19 @@ function workCard(w) {
   const have = new Set(w.items.map(i => i.format || "OTHER"));
   const chipsHave = FORMATS.filter(f => have.has(f)).map(f => `<span class="fm have">✓ ${esc(fmtLabel(f))}</span>`).join("");
   const chipsNot = family.filter(f => !have.has(f)).map(f => `<span class="fm not">${esc(fmtLabel(f))}</span>`).join("");
+  w.items.sort((a, b) => (a.series_no || 0) - (b.series_no || 0));
   const wheres = w.items.map(i => {
-    const bits = [`<b>${esc(fmtLabel(i.format))}</b>`, whereText(i) || ""];
+    const sn = seriesShort(i);
+    const bits = [`<b>${esc(sn || fmtLabel(i.format))}</b>`, sn ? esc(fmtLabel(i.format)) : "", i.episodes ? t("eps", {e: esc(i.episodes)}) : "", whereText(i) || ""];
     if (i.sealed) bits.push(t("sealed"));
     if (i.loan_to) bits.push(t("lent", {w: esc(i.loan_to)}));
     const star = i.justBought ? "" : `<button class="star ${isFav(i) ? "on" : ""}" data-fav="${i.id}" aria-label="★" style="font-size:1.4rem;padding:0 4px">${isFav(i) ? "★" : "☆"}</button>`;
     return `<div class="where" style="display:flex;align-items:center;gap:6px"><span style="flex:1">${bits.filter(Boolean).join(" · ")}</span>${star}</div>`;
   }).join("");
   const alt = first.original_title && plain(first.original_title) !== plain(first.title) ? ` <span class="wa">(${esc(first.original_title)})</span>` : "";
-  return `<div class="work"><div class="wt">${esc(first.title)}${alt}</div>
+  const st = first.series ? seriesStatus(first.series) : null;
+  const sline = st ? `<div class="fmts"><span class="fm ${st.complete ? "have" : "not"}" style="${st.complete ? "" : "border:0;background:var(--amber-bg);color:var(--amber-text)"}">${esc(st.text)}</span></div>` : "";
+  return `<div class="work"><div class="wt">${esc(first.series || first.title)}${alt}</div>${sline}
     <div class="wa">${esc([first.artist, first.year].filter(Boolean).join(" · "))}</div>
     <div class="fmts">${chipsHave}${chipsNot ? `<span class="fm not" style="border:0;padding-left:2px">${t("not_yet")}:</span>${chipsNot}` : ""}</div>
     ${wheres}</div>`;
@@ -360,7 +410,15 @@ function renderSearch(m) {
       ${wishHits.length ? "" : `<div class="acts"><button class="btn" data-act="addwish-q">${t("add_wish")}</button>
       <button class="btn primary" data-act="bought-q">${t("bought")}</button></div>`}</div>` + works(maybe).slice(0, 8).map(workCard).join("");
   } else {
-    v = `<div class="verdict no">${t("not_have")}<div class="sub">${t("not_have_sub", {q: esc(q)})}</div>
+    // "thần điêu tập 22": the series is here but not that tape / episode -> say which one is missing
+    const sq = parseSeriesQuery(q);
+    let sub = t("not_have_sub", {q: esc(q)});
+    if (sq.ep || sq.no) {
+      const words = plain(sq.q).split(/[^a-z0-9]+/).filter(Boolean);
+      const set = [...new Set(items().filter(i => i.series && words.every(w => plain(i.series + " " + (i.original_title || "")).includes(w))).map(i => i.series))][0];
+      if (set) sub = `${esc(set)}: ${esc(seriesStatus(set).text)}`;
+    }
+    v = `<div class="verdict no">${t("not_have")}<div class="sub">${sub}</div>
       ${wishHits.length ? "" : `<div class="acts"><button class="btn" data-act="addwish-q">${t("add_wish")}</button>
       <button class="btn primary" data-act="bought-q">${t("bought")}</button></div>`}</div>`;
   }

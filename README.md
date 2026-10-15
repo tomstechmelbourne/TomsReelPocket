@@ -1,6 +1,6 @@
 # Tom's Reel Pocket
 
-*One of Tom's Tech Products — Focus On One Thing And Do It Well*
+*One of Tom's Technology Solutions Products — Focus On One Thing And Do It Well*
 
 The phone companion of **Tom's Reel** (the Windows program that manages a collection of VHS tapes, cassettes,
 CDs, VCDs, DVDs, Blu-rays, 4K UHD discs and vinyl).
@@ -14,4 +14,4 @@ Open **https://tomstechmelbourne.github.io/TomsReelPocket/** in Chrome on the ph
   (`TomsReel-Pocket.json`) and stays in the phone's browser storage. Changes go back to Tom's Reel
   as a file you save (`TomsReel-Changes-….json`). Nothing is uploaded anywhere.
 
-Idea: Tom's Tech · Built by Claude (Anthropic).
+Idea: Tom's Technology Solutions · Built by Claude (Anthropic).
