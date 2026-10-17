@@ -2,7 +2,7 @@
    Data comes from Tom's Reel as TomsReel-Pocket.json ("Update"); changes go back as
    TomsReel-Changes-<time>.json ("Send to computer"). Nothing is sent to any server. */
 "use strict";
-const VERSION = "1.2.0";
+const VERSION = "1.3.0";
 
 // ------------------------------------------------------------------ texts (English main, Vietnamese second)
 // Titles, tabs and buttons Use Title Case; hints and messages are normal sentences.
@@ -35,6 +35,11 @@ const T = {
     look: "Light or dark follows your phone's setting.",
     fav_on: "★ Added to favourites", fav_off: "Removed from favourites", shared: "File ready — save it to Google Drive.",
     counts: "In The Collection",
+    tab_people: "Artists", people_title: "Artists", people_empty: "No artists yet: update from Tom's Reel.",
+    role_singer: "Singers & Bands", role_composer: "Composers", role_director: "Directors", role_actor: "Actors",
+    p_have: "You have ({n})", p_missing: "Not yet ({n})", p_missing_none: "Open the artist in Tom's Reel and tap “Look Up Online” to see what you don't have yet.",
+    p_back: "‹ All Artists", p_add: "+ Wish", p_born: "born {y}", p_find: "Find an artist…",
+    k_album: "album", k_movie: "film", k_tv: "TV",
   },
   vi: {
     search_ph: "Đã có chưa? Gõ tên…", close: "Đóng",
@@ -64,8 +69,66 @@ const T = {
     look: "Sáng hay tối tự theo cài đặt của điện thoại.",
     fav_on: "★ Đã thêm vào Ưu Thích", fav_off: "Đã bỏ khỏi Ưu Thích", shared: "File đã sẵn sàng — hãy lưu vào Google Drive.",
     counts: "Trong Bộ Sưu Tập",
+    tab_people: "Nghệ Sỹ", people_title: "Nghệ Sỹ", people_empty: "Chưa có nghệ sỹ: cập nhật từ Tom's Reel.",
+    role_singer: "Ca Sĩ & Ban Nhạc", role_composer: "Nhạc Sĩ / Tác Giả", role_director: "Đạo Diễn", role_actor: "Diễn Viên",
+    p_have: "Đã có ({n})", p_missing: "Chưa có ({n})", p_missing_none: "Mở nghệ sỹ này trong Tom's Reel và bấm “Tìm Thông Tin Trên Mạng” để biết những gì còn chưa có.",
+    p_back: "‹ Tất Cả Nghệ Sỹ", p_add: "+ Muốn Mua", p_born: "sinh {y}", p_find: "Tìm nghệ sỹ…",
+    k_album: "album", k_movie: "phim", k_tv: "phim bộ",
   },
 };
+
+// ------------------------------------------------------------------ places in the chosen language
+// "Shelf A - row 1" <-> "Kệ A - tầng 1", "Box 3" <-> "Thùng 3"; a name Tom wrote himself stays as written
+const PLACE_WORDS = [["Shelf", "Kệ"], ["Box", "Thùng"], ["Row", "Tầng"], ["Cabinet", "Tủ"], ["Drawer", "Ngăn Kéo"], ["Crate", "Sọt"], ["Case", "Hộp"]];
+function placeWord(w) {
+  for (const [en, vi] of PLACE_WORDS) {
+    for (const src of [en, vi]) {
+      if (w.toLowerCase() === src.toLowerCase()) {
+        const out = S.lang === "vi" ? vi : en;
+        return w[0] === w[0].toUpperCase() ? out : out[0].toLowerCase() + out.slice(1);
+      }
+    }
+  }
+  return "";
+}
+function placeName(text) {
+  if (!text) return "";
+  const parts = String(text).trim().split(/(\s+-\s+|,\s+|\s+\/\s+)/);
+  const out = [];
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2) { out.push(parts[i]); continue; }
+    const m = parts[i].trim().match(/^(.+?)\s+([0-9A-Za-z]{1,4})$/);
+    if (!m) return text;
+    const w = placeWord(m[1]);
+    if (!w) return text;
+    out.push(w + " " + m[2]);
+  }
+  return out.join("");
+}
+
+// ------------------------------------------------------------------ artists (same rules as Tom's Reel)
+const ROLES = ["singer", "composer", "director", "actor"];
+const NOT_PERSON = new Set(["various", "various artists", "va", "v.a.", "nhieu ca si", "nhieu nghe si", "unknown", "khong ro", "nhieu tac gia"]);
+function splitNames(s) {
+  return String(s || "").split(/\s*(?:\/|;|,|&|\+|\bfeat\.?|\bft\.?|\bvà\b|\band\b|\bwith\b)\s*/i)
+    .map(x => x.replace(/^[\s.\-–—]+|[\s.\-–—]+$/g, "")).filter(x => x.length > 1 && !NOT_PERSON.has(plain(x)));
+}
+function isMusic(it) {
+  const ct = it.content_type || "";
+  return ["music", "karaoke", "concert"].includes(ct) || (!ct && MUSIC.includes(it.format));
+}
+function peopleOf(it) {
+  const out = [];
+  if (isMusic(it)) {
+    splitNames(it.artist).forEach(n => out.push(["singer", n]));
+    String(it.composers || "").split("\n").forEach(l => splitNames(l).forEach(n => out.push(["composer", n])));
+  } else {
+    splitNames(it.artist).forEach(n => out.push(["director", n]));
+    splitNames(it.cast).slice(0, 8).forEach(n => out.push(["actor", n]));
+  }
+  const seen = new Set();
+  return out.filter(([r, n]) => { const k = r + "|" + plain(n); if (seen.has(k)) return false; seen.add(k); return true; });
+}
 const FORMATS = ["VHS", "VINYL", "CASSETTE", "CD", "VCD", "DVD", "BLURAY", "UHD", "OTHER"];
 const VIDEO = ["VHS", "VCD", "DVD", "BLURAY", "UHD"];
 const MUSIC = ["VINYL", "CASSETTE", "CD"];
@@ -245,7 +308,7 @@ function search(q) {
     if (sq.ep && !hasEp(it, sq.ep)) continue;
     if (sq.no && it.series_no !== sq.no) continue;
     const titles = [plain(it.title), plain(it.original_title), plain(it.series)].filter(Boolean);
-    const other = plain([it.artist, it.year, it.label, it.catalog_no, it.barcode].join(" "));
+    const other = plain([it.artist, it.year, it.label, it.catalog_no, it.barcode, it.composers, it.cast].join(" "));
     const words = (titles.join(" ") + " " + other).split(/[^a-z0-9]+/).filter(Boolean);
     const squashed = titles.map(x => x.replace(/[^a-z0-9]/g, "")).join(" ") + " " + other;
     let total = 0;
@@ -281,6 +344,7 @@ const ICONS = {
   fav: '<path d="M12 2.8l2.8 5.8 6.4.9-4.6 4.5 1.1 6.3L12 17.3l-5.7 3 1.1-6.3-4.6-4.5 6.4-.9z"/>',
   wish: '<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/>',
   more: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/>',
+  people: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2a5 5 0 0 1 5.5 4.8"/>',
 };
 function svg(name) {
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
@@ -288,7 +352,7 @@ function svg(name) {
 
 function renderTabs() {
   const n = S.pending.length;
-  $("tabs").innerHTML = ["search", "fav", "wish", "more"].map(v =>
+  $("tabs").innerHTML = ["search", "fav", "people", "wish", "more"].map(v =>
     `<button data-view="${v}" class="${S.view === v ? "on" : ""}">${svg(v)}<span>${t("tab_" + v)}${
       v === "more" && n ? `<span class="badge">${n}</span>` : ""}</span></button>`).join("");
 }
@@ -306,7 +370,8 @@ function ratingText(it) {
 
 function whereText(it) {
   if (!it.location) return "";
-  return it.shelf_no ? t("kept_no", {w: esc(it.location), n: it.shelf_no}) : t("kept", {w: esc(it.location)});
+  const w = esc(placeName(it.location));
+  return it.shelf_no ? t("kept_no", {w, n: it.shelf_no}) : t("kept", {w});
 }
 
 function itemRow(it) {
@@ -374,6 +439,7 @@ function render() {
       (favs.length ? `<div class="list">${favs.map(itemRow).join("")}</div>` : `<div class="empty">${t("no_fav")}</div>`);
     return;
   }
+  if (S.view === "people") return renderPeople(m);
   if (S.view === "wish") {
     const ws = wishes();
     m.innerHTML = `<div style="display:flex;align-items:center;gap:8px"><h2 style="flex:1">${t("wish_title")} · ${ws.length}</h2>
@@ -428,6 +494,47 @@ function renderSearch(m) {
       <div class="acts"><button class="btn primary" data-buywish="${w.key}">${t("bought")}</button></div></div>`).join("");
   }
   m.innerHTML = chips + v;
+}
+
+function personCard(name) {
+  return ((S.data && S.data.people) || {})[plain(name).replace(/\s+/g, " ").trim()] || {};
+}
+function renderPeople(m) {
+  if (S.person) {
+    const {role, name} = S.person;
+    const mine = items().filter(it => peopleOf(it).some(([r, n]) => plain(n) === plain(name)));
+    const card = personCard(name);
+    const yrs = card.born ? (card.died ? `${card.born} – ${card.died}` : t("p_born", {y: card.born})) : "";
+    const miss = card.missing || [];
+    m.innerHTML = `<button class="btn" data-act="people-back">${t("p_back")}</button>
+      <h2 style="margin-top:10px">${esc(name)}</h2><div class="muted">${esc([t("role_" + role), yrs, card.place].filter(Boolean).join(" · "))}</div>
+      <h2>${t("p_have", {n: mine.length})}</h2><div class="list">${mine.map(itemRow).join("")}</div>
+      <h2>${t("p_missing", {n: miss.length})}</h2>` + (miss.length ? `<div class="list">${miss.map((w, i) =>
+        `<div class="row"><div class="thumb" style="background:#FFF1D9;color:#7A4A00">♡</div><div class="txt"><div class="t">${esc(w.title)}</div>
+        <div class="m">${esc([w.year, t("k_" + (w.kind || "album"))].filter(Boolean).join(" · "))}</div></div>
+        <button class="btn primary" data-wishwork="${i}">${t("p_add")}</button></div>`).join("")}</div>` : `<div class="empty">${t("p_missing_none")}</div>`);
+    return;
+  }
+  const groups = new Map();
+  for (const it of items()) for (const [r, n] of peopleOf(it)) {
+    const k = r + "|" + plain(n);
+    if (!groups.has(k)) groups.set(k, {role: r, name: n, n: 0});
+    groups.get(k).n++;
+  }
+  const q = plain(S.pq || "");
+  const list = [...groups.values()].filter(g => !q || plain(g.name).includes(q))
+    .sort((a, b) => ROLES.indexOf(a.role) - ROLES.indexOf(b.role) || plain(a.name).localeCompare(plain(b.name)));
+  let html = `<h2>${t("people_title")} · ${groups.size}</h2>
+    <input id="pq" type="search" placeholder="${t("p_find")}" value="${esc(S.pq || "")}" style="width:100%;box-sizing:border-box;margin-bottom:8px">`;
+  if (!list.length) { m.innerHTML = html + `<div class="empty">${t("people_empty")}</div>`; return; }
+  let last = "";
+  for (const g of list) {
+    if (g.role !== last) { last = g.role; html += `<h2 style="font-size:1rem;margin:14px 0 6px">${t("role_" + g.role)}</h2>`; }
+    html += `<button class="btn block" style="text-align:left;margin:4px 0" data-person="${esc(g.role + "|" + g.name)}">${esc(g.name)} <span class="muted">(${g.n})</span></button>`;
+  }
+  m.innerHTML = html;
+  const pq = $("pq");
+  pq.oninput = () => { S.pq = pq.value; const pos = pq.selectionStart; renderPeople(m); const n = $("pq"); n.focus(); n.setSelectionRange(pos, pos); };
 }
 
 function renderMore(m) {
@@ -579,7 +686,7 @@ function findWish(key) { return wishes().find(w => w.key === key); }
 document.addEventListener("click", async e => {
   const b = e.target.closest("button");
   if (!b) return;
-  if (b.dataset.view) { S.view = b.dataset.view; render(); window.scrollTo(0, 0); return; }
+  if (b.dataset.view) { S.view = b.dataset.view; if (b.dataset.view !== "people") S.person = null; render(); window.scrollTo(0, 0); return; }
   if (b.dataset.lang) { S.lang = b.dataset.lang; localStorageSet("lang", S.lang); applyLang(); render(); return; }
   if (b.dataset.fmt !== undefined) { S.fmt = b.dataset.fmt; render(); return; }
   if (b.dataset.size) { S.scale = Number(b.dataset.size); localStorageSet("scale", S.scale);
@@ -592,10 +699,17 @@ document.addEventListener("click", async e => {
     if (on !== !!it.favorite) S.pending.push({id: uid(), type: "fav", item_id: it.id, on, at: new Date().toISOString()});
     await savePending(); toast(on ? t("fav_on") : t("fav_off")); render(); return;
   }
+  if (b.dataset.person) { const [role, ...rest] = b.dataset.person.split("|"); S.person = {role, name: rest.join("|")}; render(); window.scrollTo(0, 0); return; }
+  if (b.dataset.wishwork !== undefined && S.person) {
+    const w = (personCard(S.person.name).missing || [])[Number(b.dataset.wishwork)];
+    if (w) wishDialog({title: w.title, artist: S.person.name, year: w.year, format: ["movie", "tv"].includes(w.kind) ? "DVD" : "CD"});
+    return;
+  }
   if (b.dataset.buywish) { const w = findWish(b.dataset.buywish); if (w) boughtDialog(w, w); return; }
   if (b.dataset.editwish) { const w = findWish(b.dataset.editwish); if (w) wishDialog(w); return; }
   switch (b.dataset.act) {
     case "update": $("filein").click(); break;
+    case "people-back": S.person = null; render(); break;
     case "send": sendChanges(); break;
     case "addwish": wishDialog(null, ""); break;
     case "addwish-q": wishDialog(null, /^\d{8,}$/.test(S.q.trim()) ? "" : S.q.trim()); break;

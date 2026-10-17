@@ -1,5 +1,5 @@
 /* Offline: keep the app files on the phone. Bump CACHE when any file changes. */
-const CACHE = "tomsreel-pocket-1.2.0";
+const CACHE = "tomsreel-pocket-1.3.0";
 const FILES = ["./", "index.html", "app.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png",
                "icons/icon-maskable-512.png", "icons/apple-touch-icon.png", "icons/favicon.png"];
 self.addEventListener("install", e => {
